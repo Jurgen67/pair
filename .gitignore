@@ -1,0 +1,86 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# iOS
+ios/Pods/
+ios/build/
+ios/*.xcworkspace/xcuserdata/
+ios/*.xcodeproj/xcuserdata/
+
+# Android
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/release/
+*.apk
+*.aab
+
+# Metro
+.metro-health-check*
+
+# Build outputs
+build/
+out/
+*.tsbuildinfo
+
+# Debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Testing
+coverage/
+.nyc_output/
+
+# Editor / IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Supabase
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+
+# Claude Code
+.claude/settings.local.json
+.claude/sessions/
+
+# Temp
+tmp/
+temp/
