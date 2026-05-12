@@ -39,12 +39,27 @@ export async function advise(
   if (!textBlock) {
     throw new Error("Anthropic response contains no text block");
   }
+  let parsed;
   try {
-    return parseAdviceResponse(textBlock.text);
+    parsed = parseAdviceResponse(textBlock.text);
   } catch (e) {
     throw new Error(
       `Failed to parse Claude response for anchor "${anchorItemId}": ${(e as Error).message}`,
       { cause: e },
     );
   }
+
+  const knownIds = new Set(fixture.items.map((i) => i.id));
+  const allReturnedIds = [
+    parsed.outfit.anchorItemId,
+    ...parsed.outfit.complementItemIds,
+  ];
+  const unknown = allReturnedIds.filter((id) => !knownIds.has(id));
+  if (unknown.length > 0) {
+    throw new Error(
+      `Claude returned item IDs not in fixture: ${unknown.join(", ")}`,
+    );
+  }
+
+  return parsed;
 }

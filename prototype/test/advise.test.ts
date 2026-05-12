@@ -66,4 +66,17 @@ describe("advise", () => {
       /Failed to parse Claude response for anchor "top-1"/,
     );
   });
+
+  it("throws when Claude returns IDs not in the fixture", async () => {
+    const client = mockClient(`{
+      "outfit": {
+        "anchorItemId": "top-1",
+        "complementItemIds": ["bottom-1", "shoes-99", "coat-1"]
+      },
+      "uitleg": "Test."
+    }`);
+    await expect(advise(client, SIMONE_FIXTURE, "top-1")).rejects.toThrow(
+      /shoes-99/,
+    );
+  });
 });

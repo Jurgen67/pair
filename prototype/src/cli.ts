@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "dotenv";
-import { advise, AdviceClient } from "./advise.js";
+import { advise, type AdviceClient } from "./advise.js";
 import { SIMONE_FIXTURE } from "./fixture.js";
 
 config();
@@ -46,5 +46,8 @@ async function main(): Promise<void> {
 main().catch((err) => {
   const msg = err instanceof Error ? err.message : String(err);
   console.error("advise failed:", msg);
+  if (err instanceof Error && err.cause instanceof Error) {
+    console.error("  caused by:", err.cause.message);
+  }
   process.exit(1);
 });
