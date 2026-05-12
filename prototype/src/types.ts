@@ -39,6 +39,11 @@ export interface WardrobeFixture {
   items: ClothingItem[];
 }
 
+/**
+ * Reserved for Plan 2 (Supabase Edge Function input shape).
+ * Not consumed by the prompt-prototype itself — its functions take
+ * `fixture` and `anchorItemId` as separate parameters.
+ */
 export interface AdviceRequest {
   fixture: WardrobeFixture;
   anchorItemId: string;
@@ -46,7 +51,7 @@ export interface AdviceRequest {
 
 export interface AdviceResponseOutfit {
   anchorItemId: string;
-  complementItemIds: string[];
+  complementItemIds: readonly string[];
 }
 
 export interface AdviceResponse {
