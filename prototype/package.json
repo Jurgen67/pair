@@ -1,0 +1,23 @@
+{
+  "name": "pair-prototype",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Standalone prompt prototype for Pair v0.1 (validation gate before Supabase/Expo work).",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "advise": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  }
+}
