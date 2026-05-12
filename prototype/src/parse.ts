@@ -7,7 +7,7 @@ export function parseAdviceResponse(text: string): AdviceResponse {
 
 function extractJsonObject(text: string): unknown {
   // Strip Markdown code fences, common patterns: ```json ... ``` or ``` ... ```.
-  const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
   const stripped = fenceMatch ? fenceMatch[1] : text;
 
   // Find the first balanced JSON object in the (stripped) text.
@@ -16,9 +16,23 @@ function extractJsonObject(text: string): unknown {
     throw new Error("no JSON object found in response");
   }
 
+  // Find the matching closing brace, properly skipping string literals.
   let depth = 0;
+  let inString = false;
   for (let i = start; i < stripped.length; i++) {
     const ch = stripped[i];
+    if (inString) {
+      if (ch === "\\") {
+        i++; // skip the escaped character
+        continue;
+      }
+      if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
     if (ch === "{") depth++;
     else if (ch === "}") {
       depth--;

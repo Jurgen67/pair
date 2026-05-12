@@ -60,4 +60,19 @@ describe("parseAdviceResponse", () => {
   it("throws on completely invalid input", () => {
     expect(() => parseAdviceResponse("nope")).toThrow();
   });
+
+  it("parses uitleg containing closing brace", () => {
+    const tricky = `{
+    "outfit": {"anchorItemId": "x", "complementItemIds": ["a","b","c"]},
+    "uitleg": "Goed voor formeel (denk aan stijlref met jas})."
+  }`;
+    const result = parseAdviceResponse(tricky);
+    expect(result.outfit.anchorItemId).toBe("x");
+    expect(result.uitleg).toContain("jas}");
+  });
+
+  it("throws when outfit is null", () => {
+    const bad = '{"outfit": null, "uitleg": "test"}';
+    expect(() => parseAdviceResponse(bad)).toThrow(/outfit/);
+  });
 });
