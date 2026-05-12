@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { advise, type AdviceClient } from "../src/advise.js";
+import { advise, ADVISE_MODEL, type AdviceClient } from "../src/advise.js";
 import { SIMONE_FIXTURE } from "../src/fixture.js";
 
 // Mock fs.readFileSync so prompt-builder doesn't need real image files.
@@ -46,7 +46,7 @@ describe("advise", () => {
 
     await advise(client, SIMONE_FIXTURE, "top-2");
     const callArg = (client.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(callArg.model).toMatch(/claude/);
+    expect(callArg.model).toBe(ADVISE_MODEL);
     expect(callArg.messages).toHaveLength(1);
     expect(callArg.messages[0].role).toBe("user");
   });
@@ -57,6 +57,13 @@ describe("advise", () => {
     };
     await expect(advise(client, SIMONE_FIXTURE, "top-1")).rejects.toThrow(
       /no text block/i,
+    );
+  });
+
+  it("wraps parser errors with anchor context", async () => {
+    const client = mockClient("Sorry, I cannot generate an outfit.");
+    await expect(advise(client, SIMONE_FIXTURE, "top-1")).rejects.toThrow(
+      /Failed to parse Claude response for anchor "top-1"/,
     );
   });
 });

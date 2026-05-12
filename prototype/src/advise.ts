@@ -3,6 +3,7 @@ import type {
   MessageCreateParamsNonStreaming,
   TextBlock,
 } from "@anthropic-ai/sdk/resources/messages/messages.mjs";
+import type { RequestOptions } from "@anthropic-ai/sdk/core.mjs";
 import { buildPromptMessages } from "./prompt.js";
 import { parseAdviceResponse } from "./parse.js";
 import type { AdviceResponse, WardrobeFixture } from "./types.js";
@@ -10,7 +11,10 @@ import type { AdviceResponse, WardrobeFixture } from "./types.js";
 // Minimal interface so we can mock the Anthropic SDK in tests.
 // The real `Anthropic` client satisfies this shape via `client.messages`.
 export interface AdviceClient {
-  create(params: MessageCreateParamsNonStreaming): Promise<Message>;
+  create(
+    params: MessageCreateParamsNonStreaming,
+    options?: RequestOptions,
+  ): Promise<Message>;
 }
 
 export const ADVISE_MODEL = "claude-sonnet-4-6";
@@ -35,5 +39,12 @@ export async function advise(
   if (!textBlock) {
     throw new Error("Anthropic response contains no text block");
   }
-  return parseAdviceResponse(textBlock.text);
+  try {
+    return parseAdviceResponse(textBlock.text);
+  } catch (e) {
+    throw new Error(
+      `Failed to parse Claude response for anchor "${anchorItemId}": ${(e as Error).message}`,
+      { cause: e },
+    );
+  }
 }
