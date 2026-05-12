@@ -54,6 +54,19 @@ describe("buildPromptMessages", () => {
     expect(imageBlocks.length).toBe(3);
   });
 
+  it("handles empty styleReferences gracefully", () => {
+    const fixture = {
+      ...SIMONE_FIXTURE,
+      user: { ...SIMONE_FIXTURE.user, styleReferences: [] },
+    };
+    const { messages } = buildPromptMessages(fixture, "top-1");
+    const content = messages[0].content as Array<{ type: string }>;
+    const imageBlocks = content.filter((c) => c.type === "image");
+    // Only the anchor image — no style references
+    expect(imageBlocks).toHaveLength(1);
+    expect(JSON.stringify(messages)).toContain("(geen)");
+  });
+
   it("system prompt names the 4 v0.1 outfit slots and forbids accessories", () => {
     const { system } = buildPromptMessages(SIMONE_FIXTURE, "top-1");
     expect(system).toMatch(/top/i);

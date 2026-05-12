@@ -5,6 +5,7 @@ import type {
   ImageBlockParam,
 } from "@anthropic-ai/sdk/resources/messages/messages.mjs";
 import type { WardrobeFixture } from "./types.js";
+import { CLOTHING_CATEGORIES } from "./types.js";
 
 const SYSTEM_PROMPT = `Je bent een persoonlijk outfit-adviseur voor één gebruiker.
 
@@ -38,6 +39,10 @@ export function buildPromptMessages(
     throw new Error(`anchor item not found in fixture: ${anchorItemId}`);
   }
 
+  const remainingCategories = CLOTHING_CATEGORIES.filter(
+    (c) => c !== anchor.category,
+  );
+
   const wardrobeJson = JSON.stringify(
     fixture.items.map((i) => ({
       id: i.id,
@@ -62,15 +67,19 @@ export function buildPromptMessages(
     wardrobeJson +
     `\n\n` +
     `STYLE REFERENCES (outfits die de gebruiker droeg en mooi vindt — gebruik als stijl-referentie):\n` +
-    (styleRefBlocks.length === 0 ? "(geen)\n" : "") +
+    (styleRefBlocks.length === 0
+      ? "(geen)\n"
+      : `[zie ${styleRefBlocks.length} referentie-afbeelding${styleRefBlocks.length === 1 ? "" : "en"} hieronder, vóór het anchor-item]\n`) +
     `\n` +
-    `ANCHOR ITEM (start hiermee — id ${anchor.id}, ${anchor.category}, ${anchor.colors}, ${anchor.occasion}):\n`;
+    `ANCHOR ITEM (start hiermee — id ${anchor.id}, ${anchor.category}, ${anchor.colors}, ${anchor.occasion}):\n` +
+    `Vul de overige 3 outfit-categorieën aan met items uit de wardrobe-lijst, één per categorie: ${remainingCategories.join(", ")}.\n`;
 
   const content: Array<
     { type: "text"; text: string } | ImageBlockParam
   > = [
     { type: "text", text: userText },
     ...styleRefBlocks,
+    { type: "text", text: "\n[afbeelding van het anchor-item volgt:]" },
     anchorBlock,
   ];
 
