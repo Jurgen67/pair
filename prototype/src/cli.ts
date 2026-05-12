@@ -7,6 +7,12 @@ config();
 
 const ANCHOR_DEFAULT = "top-1";
 
+function describeItem(id: string): string {
+  const item = SIMONE_FIXTURE.items.find((i) => i.id === id);
+  if (!item) return id;
+  return `${id} (${item.category} — ${item.colors})`;
+}
+
 async function main(): Promise<void> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -18,7 +24,7 @@ async function main(): Promise<void> {
 
   const anchorId = process.argv[2] ?? ANCHOR_DEFAULT;
 
-  console.log(`Asking Claude for an outfit anchored on item: ${anchorId}`);
+  console.log(`Bezig met advies voor anchor: ${describeItem(anchorId)}`);
   console.log("---");
 
   const client = new Anthropic({ apiKey });
@@ -28,9 +34,9 @@ async function main(): Promise<void> {
   const result = await advise(adviceClient, SIMONE_FIXTURE, anchorId);
 
   console.log("Outfit:");
-  console.log(`  anchor:   ${result.outfit.anchorItemId}`);
+  console.log(`  anchor:   ${describeItem(result.outfit.anchorItemId)}`);
   for (const id of result.outfit.complementItemIds) {
-    console.log(`  + slot:   ${id}`);
+    console.log(`  + slot:   ${describeItem(id)}`);
   }
   console.log("");
   console.log("Uitleg:");
@@ -38,6 +44,7 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  console.error("advise failed:", err);
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("advise failed:", msg);
   process.exit(1);
 });
