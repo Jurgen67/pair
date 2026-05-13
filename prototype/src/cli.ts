@@ -1,14 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "dotenv";
 import { advise, type AdviceClient } from "./advise.js";
-import { SIMONE_FIXTURE } from "./fixture.js";
+import { SIMONE_FIXTURE, loadLiveFixture } from "./fixture.js";
 
 config();
 
 const ANCHOR_DEFAULT = "top-1";
 
+let fixture = SIMONE_FIXTURE; // initialized in main()
+
 function describeItem(id: string): string {
-  const item = SIMONE_FIXTURE.items.find((i) => i.id === id);
+  const item = fixture.items.find((i) => i.id === id);
   if (!item) return id;
   return `${id} (${item.category} — ${item.colors})`;
 }
@@ -22,6 +24,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  fixture = loadLiveFixture();
   const anchorId = process.argv[2] ?? ANCHOR_DEFAULT;
 
   console.log(`Bezig met advies voor anchor: ${describeItem(anchorId)}`);
@@ -31,7 +34,7 @@ async function main(): Promise<void> {
   const adviceClient: AdviceClient = {
     create: (params, options) => client.messages.create(params, options),
   };
-  const result = await advise(adviceClient, SIMONE_FIXTURE, anchorId);
+  const result = await advise(adviceClient, fixture, anchorId);
 
   console.log("Outfit:");
   console.log(`  anchor:   ${describeItem(result.outfit.anchorItemId)}`);

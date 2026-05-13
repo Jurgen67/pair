@@ -1,4 +1,52 @@
+import { readFileSync, existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 import type { WardrobeFixture } from "./types.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+/**
+ * Path to the live items.json written by the capture server.
+ * Located at prototype/eval-data/items.json (relative to this file's prototype/src/ location).
+ */
+export const LIVE_ITEMS_JSON_PATH = resolve(__dirname, "../eval-data/items.json");
+
+/**
+ * Loads the live fixture from items.json if present, else returns SIMONE_FIXTURE.
+ * Prints a warning to stderr when falling back so the user knows.
+ *
+ * Validation: requires the parsed JSON to have `user` and `items` keys at top level.
+ * If validation fails, also falls back (with stderr warning).
+ */
+export function loadLiveFixture(
+  path: string = LIVE_ITEMS_JSON_PATH,
+  warn: (msg: string) => void = (m) => console.error(m),
+): WardrobeFixture {
+  if (!existsSync(path)) {
+    warn(
+      `Warning: no items.json at ${path}. Using dummy SIMONE_FIXTURE — run the capture server first to record real items.`,
+    );
+    return SIMONE_FIXTURE;
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(readFileSync(path, "utf-8"));
+  } catch {
+    warn(`Warning: items.json at ${path} is unparseable. Using SIMONE_FIXTURE fallback.`);
+    return SIMONE_FIXTURE;
+  }
+  if (
+    typeof parsed !== "object" ||
+    parsed === null ||
+    !("user" in parsed) ||
+    !("items" in parsed)
+  ) {
+    warn(`Warning: items.json at ${path} has unexpected shape. Using SIMONE_FIXTURE fallback.`);
+    return SIMONE_FIXTURE;
+  }
+  return parsed as WardrobeFixture;
+}
 
 // Dummy fixture for unit tests + manual eval starting point.
 // During manual eval (Task 8), point photoPath values at real images in eval-data/.
