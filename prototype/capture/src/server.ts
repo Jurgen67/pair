@@ -16,6 +16,7 @@ import {
   setProportionsText,
   emptyFixture,
 } from "./state.js";
+import { detectLocalIpv4, printQrForUrl } from "./qr.js";
 
 // ---------------------------------------------------------------------------
 // Path constants
@@ -274,5 +275,10 @@ app.post("/api/reset", (req, res) => {
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Capture server listening on http://0.0.0.0:${PORT}`);
+  const ip = detectLocalIpv4();
+  const url = `http://${ip}:${PORT}`;
+  console.log(`Capture server listening on ${url}`);
+  console.log("Scan deze QR-code op je iPhone (camera-app):");
+  printQrForUrl(url);
+  console.log("\nDruk Ctrl+C om te stoppen.");
 });
