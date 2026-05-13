@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pair — capturen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Pair — kledingstukken capturen</h1>
+
+  <!-- Progress / status bar -->
+  <div id="status-bar" class="status-bar">
+    <span id="progress-text">Laden...</span>
+  </div>
+
+  <hr>
+
+  <!-- Sectie 1: Lichaam & voorkeuren -->
+  <section id="sectie-proportions">
+    <h2>Sectie 1 — Lichaam &amp; voorkeuren</h2>
+    <p id="proportions-hint" class="hint" hidden></p>
+    <form id="form-proportions" novalidate>
+      <label for="proportionsText">Beschrijf je lichaamsproporties en stijlvoorkeur:</label>
+      <textarea
+        id="proportionsText"
+        name="proportionsText"
+        rows="5"
+        placeholder="Bijv. klein postuur, brede schouders, voorkeur voor klassiek..."
+        required
+      ></textarea>
+      <button type="submit" id="btn-proportions">Opslaan</button>
+      <div id="feedback-proportions" class="feedback" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <hr>
+
+  <!-- Sectie 2: Stijl-referenties -->
+  <section id="sectie-stijlrefs">
+    <h2>Sectie 2 — Stijl-referenties</h2>
+    <p class="hint">Voeg foto's toe van outfits die je mooi vindt (max. 5).</p>
+    <form id="form-stijlref" novalidate>
+      <label for="stijlref-photo">Foto:</label>
+      <input
+        type="file"
+        id="stijlref-photo"
+        name="photo"
+        accept="image/*"
+        capture="environment"
+        required
+      >
+      <p id="stijlref-counter" class="counter">0 / 5 toegevoegd</p>
+      <button type="submit" id="btn-stijlref">Toevoegen</button>
+      <div id="feedback-stijlref" class="feedback" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <hr>
+
+  <!-- Sectie 3: Items -->
+  <section id="sectie-items">
+    <h2>Sectie 3 — Items</h2>
+    <p class="hint">Tip: gebruik daglicht en een neutrale achtergrond voor de beste herkenning.</p>
+    <form id="form-item" novalidate>
+      <label for="item-category">Categorie:</label>
+      <select id="item-category" name="category" required>
+        <option value="top">Top</option>
+        <option value="broek_of_rok">Broek of rok</option>
+        <option value="schoenen">Schoenen</option>
+        <option value="jas">Jas</option>
+      </select>
+
+      <label for="item-colors">Kleur(en):</label>
+      <input
+        type="text"
+        id="item-colors"
+        name="colors"
+        placeholder="bijv. donkerblauw, wit met groene streep"
+        required
+      >
+
+      <label for="item-occasion">Gelegenheid:</label>
+      <select id="item-occasion" name="occasion" required>
+        <option value="casual">Casual</option>
+        <option value="werk">Werk</option>
+        <option value="uit">Uit</option>
+        <option value="sport">Sport</option>
+      </select>
+
+      <label for="item-photo">Foto:</label>
+      <input
+        type="file"
+        id="item-photo"
+        name="photo"
+        accept="image/*"
+        capture="environment"
+        required
+      >
+
+      <button type="submit" id="btn-item">Item toevoegen</button>
+      <div id="feedback-item" class="feedback" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
