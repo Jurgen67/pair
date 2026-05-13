@@ -1,0 +1,27 @@
+{
+  "name": "pair-capture",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Throwaway local web UI to capture wardrobe photos + labels for the Pair v0.1 manual eval.",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "express": "^4.19.0",
+    "multer": "^1.4.5-lts.1",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/multer": "^1.4.0",
+    "@types/node": "^20.11.0",
+    "@types/qrcode-terminal": "^0.12.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.0"
+  }
+}
