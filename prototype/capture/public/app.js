@@ -235,6 +235,38 @@ function initStijlRefs() {
 // Section 3 — Items
 // ---------------------------------------------------------------------------
 
+function initItemsDelete() {
+  var container = document.getElementById('items-list');
+
+  container.addEventListener('click', function(e) {
+    var target = e.target;
+    if (!target || target.className !== 'items-list-delete') return;
+
+    var id = target.getAttribute('data-id');
+    if (!id) return;
+
+    var ok = window.confirm(id + ' verwijderen?');
+    if (!ok) return;
+
+    target.disabled = true;
+    target.textContent = 'Bezig...';
+
+    fetch('/api/items/' + encodeURIComponent(id), { method: 'DELETE' })
+      .then(function(res) {
+        if (!res.ok) return extractError(res).then(function(msg) { throw new Error(msg); });
+        return res.json();
+      })
+      .then(function(data) {
+        updateProgress(data.state);
+      })
+      .catch(function(err) {
+        target.disabled = false;
+        target.textContent = 'Verwijder';
+        window.alert('Verwijderen mislukt: ' + err.message);
+      });
+  });
+}
+
 function initItems() {
   var form = document.getElementById('form-item');
   var btn = document.getElementById('btn-item');
@@ -299,4 +331,5 @@ document.addEventListener('DOMContentLoaded', function() {
   initProportions();
   initStijlRefs();
   initItems();
+  initItemsDelete();
 });
