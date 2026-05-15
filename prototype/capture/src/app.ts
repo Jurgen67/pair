@@ -60,6 +60,7 @@ export function createApp(opts: CreateAppOptions): express.Express {
   const app = express();
   app.use(express.json());
   app.use(express.static(path.join(__dirname, "../public")));
+  app.use("/photos", express.static(EVAL_DATA_DIR));
 
   app.get("/api/state", (_req, res) => {
     const fixture = loadItemsJson(ITEMS_JSON_PATH) ?? emptyFixture();

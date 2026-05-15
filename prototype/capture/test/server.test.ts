@@ -85,4 +85,27 @@ describe("capture app", () => {
       expect(del.body.state.items).toEqual([]);
     });
   });
+
+  describe("GET /photos/:filename", () => {
+    it("serveert een bestand uit eval-data onder /photos", async () => {
+      const app = createApp({ evalDataDir });
+      const fs = await import("node:fs");
+      const path = await import("node:path");
+
+      const filename = "smoke.jpg";
+      const content = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10]);
+      fs.writeFileSync(path.resolve(evalDataDir, filename), content);
+
+      const res = await request(app).get(`/photos/${filename}`).buffer(true);
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/^image\/jpeg/);
+      expect(res.body.equals(content)).toBe(true);
+    });
+
+    it("retourneert 404 voor een onbekende file", async () => {
+      const app = createApp({ evalDataDir });
+      const res = await request(app).get("/photos/does-not-exist.jpg");
+      expect(res.status).toBe(404);
+    });
+  });
 });
