@@ -15,6 +15,7 @@ import {
   addStyleRef,
   setProportionsText,
   emptyFixture,
+  removeItem,
 } from "./state.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -224,6 +225,34 @@ export function createApp(opts: CreateAppOptions): express.Express {
     }
 
     res.status(200).json({ state: emptyFixture() });
+  });
+
+  app.delete("/api/items/:id", (req, res) => {
+    const id = req.params.id;
+    const fixture = loadItemsJson(ITEMS_JSON_PATH) ?? emptyFixture();
+    const item = fixture.items.find((i) => i.id === id);
+    if (!item) {
+      res.status(404).json({ error: "item not found" });
+      return;
+    }
+
+    // photoPath is stored as "eval-data/<filename>"; resolve against EVAL_DATA_DIR
+    // by taking just the filename — works regardless of where EVAL_DATA_DIR lives.
+    const absPath = resolve(EVAL_DATA_DIR, path.basename(item.photoPath));
+    try {
+      fs.unlinkSync(absPath);
+    } catch (err: unknown) {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
+    }
+
+    const newFixture = removeItem(fixture, id);
+    if (!newFixture) {
+      res.status(500).json({ error: "internal: removeItem returned null" });
+      return;
+    }
+    saveItemsJson(ITEMS_JSON_PATH, newFixture);
+
+    res.status(200).json({ state: newFixture });
   });
 
   return app;
