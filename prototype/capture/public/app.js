@@ -36,6 +36,40 @@ var CATEGORY_LABELS = {
   jas: 'Jassen'
 };
 
+function photoUrlFor(photoPath) {
+  // photoPath is "eval-data/<filename>". The /photos static route is mounted
+  // on the eval-data dir, so strip the prefix.
+  var prefix = 'eval-data/';
+  if (photoPath.indexOf(prefix) === 0) {
+    return '/photos/' + photoPath.slice(prefix.length);
+  }
+  return '/photos/' + photoPath;
+}
+
+function renderItemsList(items) {
+  var container = document.getElementById('items-list');
+  if (items.length === 0) {
+    container.innerHTML = '<p class="items-list-empty">Nog geen items toegevoegd.</p>';
+    return;
+  }
+
+  var html = '<p class="items-list-count">Ingevoerde items (' + items.length + ')</p>';
+  html += '<ul class="items-list-ul">';
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    html += '<li class="items-list-row" data-id="' + item.id + '">';
+    html += '<img class="items-list-thumb" src="' + photoUrlFor(item.photoPath) + '" alt="">';
+    html += '<span class="items-list-meta">';
+    html += '<strong>' + item.id + '</strong> &middot; ' + item.colors + ' &middot; ' + item.occasion;
+    html += '</span>';
+    html += '<button type="button" class="items-list-delete" data-id="' + item.id + '">Verwijder</button>';
+    html += '</li>';
+  }
+  html += '</ul>';
+
+  container.innerHTML = html;
+}
+
 function updateProgress(state) {
   var counts = { top: 0, broek_of_rok: 0, schoenen: 0, jas: 0 };
   for (var i = 0; i < state.items.length; i++) {
@@ -70,6 +104,9 @@ function updateProgress(state) {
   } else {
     hintEl.hidden = true;
   }
+
+  // Render items list
+  renderItemsList(state.items);
 }
 
 // ---------------------------------------------------------------------------
