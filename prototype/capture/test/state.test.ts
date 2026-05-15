@@ -10,6 +10,7 @@ import {
   addItem,
   addStyleRef,
   setProportionsText,
+  removeItem,
 } from "../src/state.js";
 import type { WardrobeFixture, ClothingItem } from "../../src/types.js";
 
@@ -217,5 +218,58 @@ describe("setProportionsText", () => {
     const original = JSON.stringify(f);
     setProportionsText(f, "lang en slank");
     expect(JSON.stringify(f)).toBe(original);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// removeItem
+// ---------------------------------------------------------------------------
+describe("removeItem", () => {
+  function withThreeTops(): WardrobeFixture {
+    let f = emptyFixture();
+    f = addItem(f, {
+      category: "top",
+      colors: "wit",
+      occasion: "werk",
+      photoPath: "eval-data/top-1.jpg",
+    });
+    f = addItem(f, {
+      category: "top",
+      colors: "donkerblauw",
+      occasion: "casual",
+      photoPath: "eval-data/top-2.jpg",
+    });
+    f = addItem(f, {
+      category: "top",
+      colors: "zwart",
+      occasion: "uit",
+      photoPath: "eval-data/top-3.jpg",
+    });
+    return f;
+  }
+
+  it("verwijdert het item met de gegeven id en laat de rest staan", () => {
+    const before = withThreeTops();
+    const after = removeItem(before, "top-2");
+    expect(after).not.toBeNull();
+    expect(after!.items.map((i) => i.id)).toEqual(["top-1", "top-3"]);
+  });
+
+  it("geeft null als de id niet bestaat", () => {
+    const before = withThreeTops();
+    expect(removeItem(before, "top-99")).toBeNull();
+  });
+
+  it("muteert de originele fixture niet (immutable)", () => {
+    const before = withThreeTops();
+    const idsBefore = before.items.map((i) => i.id);
+    removeItem(before, "top-2");
+    expect(before.items.map((i) => i.id)).toEqual(idsBefore);
+  });
+
+  it("laat gap-fill werken: na verwijderen van top-2 krijgt de volgende top weer id top-2", () => {
+    const before = withThreeTops();
+    const after = removeItem(before, "top-2")!;
+    expect(nextIdForCategory(after, "top")).toBe("top-2");
   });
 });

@@ -127,3 +127,19 @@ export function setProportionsText(
     },
   };
 }
+
+/**
+ * Returns a new fixture with the item identified by `id` removed.
+ * Returns null if no item with that id exists.
+ */
+export function removeItem(
+  fixture: WardrobeFixture,
+  id: string,
+): WardrobeFixture | null {
+  const idx = fixture.items.findIndex((item) => item.id === id);
+  if (idx === -1) return null;
+  return {
+    ...fixture,
+    items: fixture.items.filter((item) => item.id !== id),
+  };
+}
