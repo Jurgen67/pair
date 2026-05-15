@@ -28,9 +28,9 @@ prototype/capture/
 │   ├── index.html            # Modify: items-lijst container vóór formulier in sectie 3
 │   ├── app.js                # Modify: renderItemsList + delete-handler met confirm()
 │   └── style.css             # Modify: minimal styles voor lijst-rijen + thumbnail
-└── test/                     # Was leeg; populated by this plan
+└── test/                     # Heeft al qr.test.ts (3) + state.test.ts (~21); dit plan vult aan
     ├── helpers.ts            # NEW: tmpdir setup helpers voor route-tests
-    ├── state.test.ts         # NEW: unit tests voor removeItem
+    ├── state.test.ts         # Modify: append removeItem-describe (bestaande tests intact)
     └── server.test.ts        # NEW: integration tests voor DELETE + /photos via supertest
 ```
 
@@ -478,47 +478,60 @@ git commit -m "refactor(capture): split server.ts into app factory + thin listen
 
 **Files:**
 - Modify: `prototype/capture/src/state.ts`
-- Create: `prototype/capture/test/state.test.ts`
+- Modify: `prototype/capture/test/state.test.ts` (append nieuwe describe, bestaande tests intact)
 
 **Doel:** Pure helper die een item op id verwijdert uit een `WardrobeFixture`. Past bij stijl van `addItem` / `addStyleRef` / `setProportionsText` (immutable, geen side effects).
 
-- [ ] **Step 1: Schrijf de failing tests**
+- [ ] **Step 1: Append failing tests aan het einde van het bestaande `test/state.test.ts`**
 
-Create `prototype/capture/test/state.test.ts`:
+Het bestaande bestand begint met:
 ```ts
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import * as fs from "fs";
+import * as path from "path";
+import * as os from "os";
 import {
   emptyFixture,
-  addItem,
-  removeItem,
+  loadItemsJson,
+  saveItemsJson,
   nextIdForCategory,
+  addItem,
+  addStyleRef,
+  setProportionsText,
 } from "../src/state.js";
-import type { WardrobeFixture } from "../../src/types.js";
+import type { WardrobeFixture, ClothingItem } from "../../src/types.js";
+```
 
-function withThreeTops(): WardrobeFixture {
-  let f = emptyFixture();
-  f = addItem(f, {
-    category: "top",
-    colors: "wit",
-    occasion: "werk",
-    photoPath: "eval-data/top-1.jpg",
-  });
-  f = addItem(f, {
-    category: "top",
-    colors: "donkerblauw",
-    occasion: "casual",
-    photoPath: "eval-data/top-2.jpg",
-  });
-  f = addItem(f, {
-    category: "top",
-    colors: "zwart",
-    occasion: "uit",
-    photoPath: "eval-data/top-3.jpg",
-  });
-  return f;
-}
+Voeg `removeItem` toe aan de import-list (alfabetisch tussen `nextIdForCategory` en `setProportionsText`, of waar logisch). Append onderaan het bestand:
 
+```ts
+// ---------------------------------------------------------------------------
+// removeItem
+// ---------------------------------------------------------------------------
 describe("removeItem", () => {
+  function withThreeTops(): WardrobeFixture {
+    let f = emptyFixture();
+    f = addItem(f, {
+      category: "top",
+      colors: "wit",
+      occasion: "werk",
+      photoPath: "eval-data/top-1.jpg",
+    });
+    f = addItem(f, {
+      category: "top",
+      colors: "donkerblauw",
+      occasion: "casual",
+      photoPath: "eval-data/top-2.jpg",
+    });
+    f = addItem(f, {
+      category: "top",
+      colors: "zwart",
+      occasion: "uit",
+      photoPath: "eval-data/top-3.jpg",
+    });
+    return f;
+  }
+
   it("verwijdert het item met de gegeven id en laat de rest staan", () => {
     const before = withThreeTops();
     const after = removeItem(before, "top-2");

@@ -91,9 +91,11 @@ Gedrag:
 
 ## 5. Tests (TDD vanaf commit 1)
 
-Vitest is in `prototype/capture/vitest.config.ts` al geconfigureerd; `test/` is nu leeg. Deze brainstorm fixt dat voor de nieuwe code; bestaande routes worden niet retroactief gedekt.
+Vitest is in `prototype/capture/vitest.config.ts` al geconfigureerd. `test/` bevat al `qr.test.ts` (3 tests) en `state.test.ts` (~21 tests) — die respecteren we en breiden we uit. Bestaande POST-routes (`/api/items`, `/api/style-refs`, `/api/proportions`, `/api/reset`) krijgen géén retroactieve tests in deze ronde (afzonderlijke beslissing).
 
-### 5.1 `test/state.test.ts` — unit-tests voor `removeItem`
+### 5.1 `test/state.test.ts` — `removeItem`-tests appenden
+
+Het bestaande bestand bevat al tests voor `emptyFixture`/`loadItemsJson`/`saveItemsJson`/`nextIdForCategory`/`addItem`/`addStyleRef`/`setProportionsText`. Daaraan appenden we een nieuwe `describe("removeItem", …)` met:
 
 - Verwijdert het item met de gegeven id en laat de rest staan.
 - Geeft `null` terug bij onbekende id.
