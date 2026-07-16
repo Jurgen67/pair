@@ -4,6 +4,15 @@
 // Utilities
 // ---------------------------------------------------------------------------
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function setFeedback(elId, message, isError) {
   var el = document.getElementById(elId);
   el.textContent = message;
@@ -57,12 +66,13 @@ function renderItemsList(items) {
   html += '<ul class="items-list-ul">';
   for (var i = 0; i < items.length; i++) {
     var item = items[i];
-    html += '<li class="items-list-row" data-id="' + item.id + '">';
-    html += '<img class="items-list-thumb" src="' + photoUrlFor(item.photoPath) + '" alt="">';
+    var idAttr = escapeHtml(item.id);
+    html += '<li class="items-list-row" data-id="' + idAttr + '">';
+    html += '<img class="items-list-thumb" src="' + escapeHtml(photoUrlFor(item.photoPath)) + '" alt="">';
     html += '<span class="items-list-meta">';
-    html += '<strong>' + item.id + '</strong> &middot; ' + item.colors + ' &middot; ' + item.occasion;
+    html += '<strong>' + escapeHtml(item.id) + '</strong> &middot; ' + escapeHtml(item.colors) + ' &middot; ' + escapeHtml(item.occasion);
     html += '</span>';
-    html += '<button type="button" class="items-list-delete" data-id="' + item.id + '">Verwijder</button>';
+    html += '<button type="button" class="items-list-delete" data-id="' + idAttr + '">Verwijder</button>';
     html += '</li>';
   }
   html += '</ul>';
