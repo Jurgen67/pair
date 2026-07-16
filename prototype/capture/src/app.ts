@@ -201,8 +201,11 @@ export function createApp(opts: CreateAppOptions): express.Express {
 
     const fixture = loadItemsJson(ITEMS_JSON_PATH) ?? emptyFixture();
 
+    // Resolve photos by filename only (path.basename) so a tampered
+    // photoPath in items.json can never make unlink escape EVAL_DATA_DIR.
+    // Mirrors the DELETE /api/items/:id handler.
     for (const item of fixture.items) {
-      const absPath = resolve(EVAL_DATA_DIR, "..", item.photoPath);
+      const absPath = resolve(EVAL_DATA_DIR, path.basename(item.photoPath));
       try {
         fs.unlinkSync(absPath);
       } catch (err: unknown) {
@@ -211,7 +214,7 @@ export function createApp(opts: CreateAppOptions): express.Express {
     }
 
     for (const ref of fixture.user.styleReferences) {
-      const absPath = resolve(EVAL_DATA_DIR, "..", ref.photoPath);
+      const absPath = resolve(EVAL_DATA_DIR, path.basename(ref.photoPath));
       try {
         fs.unlinkSync(absPath);
       } catch (err: unknown) {
